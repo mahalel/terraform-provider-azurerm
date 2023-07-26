@@ -185,6 +185,8 @@ The following arguments are supported:
 
 ---
 
+* `aad_only_authentication_enabled` - (Optional) Whether Azure Active Directory only authentication is enabled for the workspace. Defaults to `false`.
+
 * `aad_admin` - (Optional) An `aad_admin` block as defined below. Conflicts with `customer_managed_key`.
 
 * `compute_subnet_id` - (Optional) Subnet ID used for computes in workspace Changing this forces a new resource to be created.

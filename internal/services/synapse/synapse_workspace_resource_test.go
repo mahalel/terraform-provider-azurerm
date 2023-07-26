@@ -287,6 +287,7 @@ resource "azurerm_synapse_workspace" "test" {
   resource_group_name                  = azurerm_resource_group.test.name
   location                             = azurerm_resource_group.test.location
   storage_data_lake_gen2_filesystem_id = azurerm_storage_data_lake_gen2_filesystem.test.id
+  aad_only_authentication_enabled 	   = false
   sql_administrator_login              = "sqladminuser"
   sql_administrator_login_password     = "H@Sh1CoR3!"
   data_exfiltration_protection_enabled = true

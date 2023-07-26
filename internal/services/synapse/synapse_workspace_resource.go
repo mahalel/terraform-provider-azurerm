@@ -113,6 +113,12 @@ func resourceSynapseWorkspace() *pluginsdk.Resource {
 				ForceNew: true,
 			},
 
+			"aad_only_authentication_enabled": {
+				Type:     pluginsdk.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+
 			"aad_admin": {
 				Type:          pluginsdk.TypeList,
 				Optional:      true,
@@ -357,6 +363,7 @@ func resourceSynapseWorkspaceCreate(d *pluginsdk.ResourceData, meta interface{})
 			ManagedResourceGroupName:         utils.String(d.Get("managed_resource_group_name").(string)),
 			WorkspaceRepositoryConfiguration: expandWorkspaceRepositoryConfiguration(d),
 			Encryption:                       expandEncryptionDetails(d),
+			AzureADOnlyAuthentication:        utils.Bool(d.Get("aad_only_authentication_enabled").(bool)),
 		},
 		Tags: tags.Expand(d.Get("tags").(map[string]interface{})),
 	}
@@ -540,6 +547,11 @@ func resourceSynapseWorkspaceRead(d *pluginsdk.ResourceData, meta interface{}) e
 		if props.PurviewConfiguration != nil {
 			d.Set("purview_id", props.PurviewConfiguration.PurviewResourceID)
 		}
+		aadOnlyAuthenticationEnabled := false
+		if v := props.AzureADOnlyAuthentication; v != nil {
+			aadOnlyAuthenticationEnabled = *v
+		}
+		d.Set("aad_only_authentication_enabled", aadOnlyAuthenticationEnabled)
 	}
 	if err := d.Set("aad_admin", flattenArmWorkspaceAadAdmin(aadAdmin.AadAdminProperties)); err != nil {
 		return fmt.Errorf("setting `aad_admin`: %+v", err)
@@ -567,10 +579,14 @@ func resourceSynapseWorkspaceUpdate(d *pluginsdk.ResourceData, meta interface{})
 		return err
 	}
 
-	if d.HasChanges("tags", "sql_administrator_login_password", "github_repo", "azure_devops_repo", "customer_managed_key", "public_network_access_enabled") {
+	if d.HasChanges("tags", "sql_administrator_login_password", "github_repo", "azure_devops_repo", "customer_managed_key", "public_network_access_enabled", "aad_only_authentication_enabled") {
 		publicNetworkAccess := synapse.WorkspacePublicNetworkAccessEnabled
 		if !d.Get("public_network_access_enabled").(bool) {
 			publicNetworkAccess = synapse.WorkspacePublicNetworkAccessDisabled
+		}
+		aadOnlyAuthentication := synapse.WorkspaceProperties.AzureADOnlyAuthentication
+		if d.Get("aad_only_authentication_enabled").(bool) {
+			aadOnlyAuthentication = utils.Bool(d.Get("aad_only_authentication_enabled"").(bool))
 		}
 		workspacePatchInfo := synapse.WorkspacePatchInfo{
 			Tags: tags.Expand(d.Get("tags").(map[string]interface{})),
