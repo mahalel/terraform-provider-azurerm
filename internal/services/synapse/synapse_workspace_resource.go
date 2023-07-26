@@ -586,7 +586,7 @@ func resourceSynapseWorkspaceUpdate(d *pluginsdk.ResourceData, meta interface{})
 		}
 		aadOnlyAuthentication := synapse.WorkspaceProperties.AzureADOnlyAuthentication
 		if d.Get("aad_only_authentication_enabled").(bool) {
-			aadOnlyAuthentication = utils.Bool(d.Get("aad_only_authentication_enabled"").(bool))
+			aadOnlyAuthentication = utils.Bool(d.Get("aad_only_authentication_enabled").(bool))
 		}
 		workspacePatchInfo := synapse.WorkspacePatchInfo{
 			Tags: tags.Expand(d.Get("tags").(map[string]interface{})),
